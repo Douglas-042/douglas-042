@@ -9,16 +9,23 @@ Set-ExecutionPolicy -Scope Process Bypass -Force
 .\Douglas-042.ps1
 ```
 
-| Script | Purpose |
-|---|---|
-| `Douglas-042.ps1` | Full IR: 153 detection rules, risk scoring, HTML report |
-| `Douglas-Lite.ps1` | Fast text snapshot, no analysis - run and read |
 That's it — a menu opens. Run as **Administrator**.
 
 Example report: [docs/REPORT-example.html](docs/REPORT-example.html)
 <img src="docs/images/mitre.png" width="900">
 
 ---
+
+## Two scripts in this repo
+
+| Script | Question it answers | Time |
+|---|---|---|
+| [`Douglas-042.ps1`](Douglas-042.ps1) | *Is this machine compromised?* — 151 detection rules, risk score, HTML report | 1–15 min |
+| [`Douglas-042-Lite.ps1`](Douglas-042-Lite.ps1) | *What is on this machine?* — single text snapshot, no analysis | under 1 min |
+
+Start with Lite when you need eyes on a host immediately. Move to Douglas-042
+when you need an answer you can put in a report. Lite documentation:
+[docs/LITE.md](docs/LITE.md).
 
 ## What it does
 
@@ -33,6 +40,10 @@ against 151 built-in detection rules, and produces a single-file offline HTML re
 - **Hunting** — baseline diff, rarity scoring, jitter-based beaconing detection,
   entity correlation
 - **Optional** — Sigma rule matching, YARA scanning
+
+Domain role is detected automatically (Client / Member Server / Domain
+Controller) and the relevant modules are enabled — Kerberos event analysis only
+runs on a DC, for example.
 
 ## Menu
 
@@ -54,6 +65,41 @@ against 151 built-in detection rules, and produces a single-file offline HTML re
 Parameters work too (`-Help` for the full list). The menu only opens when run
 interactively with no parameters, so automation is unaffected.
 
+## Usage
+
+```powershell
+# Standard collection, last 14 days
+.\Douglas-042.ps1
+
+# First response — skips file scanning and hashing
+.\Douglas-042.ps1 -Quick
+
+# Deep dive — 30 days, plus raw artifacts (MFT, hives, evtx, SRUM, Amcache) via VSS
+.\Douglas-042.ps1 -Days 30 -CollectRaw
+
+# Isolated or OPSEC-sensitive environment — no reverse DNS, no outbound lookups
+.\Douglas-042.ps1 -NoResolve
+
+# Match everything collected against your own indicators (one per line:
+# hash / IP / domain / filename)
+.\Douglas-042.ps1 -IocFile .\iocs.txt
+
+# Compare against a known-good host and score rare artifacts
+.\Douglas-042.ps1 -Baseline .\Output\DOUGLAS_GOLDEN_20260101_120000
+
+# Sweep a fleet over WinRM — nothing is collected locally
+.\Douglas-042.ps1 -ComputerName SRV01,SRV02,WKS17 -Credential (Get-Credential)
+
+# Sigma matching against a compiled pack
+.\Douglas-042.ps1 -SigmaPath .\sigma-pack.json
+
+# Export the rule catalog to CSV (no admin, no collection)
+.\Douglas-042.ps1 -ExportRuleCatalog
+```
+
+Report language is English by default; `-Language TR` renders the report in
+Turkish. Collection logic is identical either way.
+
 ## Output
 
 ```
@@ -65,6 +111,8 @@ Output\DOUGLAS_<host>_<time>\
 ```
 
 The report shows unique findings; the complete evidence list is in FINDINGS.csv.
+The HTML report is a single self-contained file with no external references —
+it opens on an air-gapped machine and survives being emailed.
 
 ## Updating rule sets
 
@@ -82,6 +130,10 @@ Files are found in `data\`, next to the script, or in the working directory —
 no paths to configure. **Nothing needs downloading to work offline**; all
 collection and the 151 built-in rules run regardless.
 
+`Build-SigmaPack.ps1` compiles Sigma YAML into the `sigma-pack.json` the collector
+reads. Compilation happens once, ahead of time, so the collector itself never
+needs a YAML parser.
+
 ## Design notes
 
 **Sigma findings are excluded from the risk score.** Community rules vary in
@@ -94,6 +146,18 @@ wrong answers.
 report states "scan not performed, component missing" (DGL-410). An analyst
 believing a scan ran when it did not is the most dangerous failure mode.
 
+**The risk score saturates.** Findings are counted unique, not raw, and weighted
+on a curve that caps at 100. A machine with forty variations of the same
+misconfiguration does not outrank a machine with one confirmed implant.
+
+**Related findings are correlated into entities.** Six separate hits on the same
+file, service, task or IP are presented as one chain rather than six disconnected
+rows.
+
+**The rule catalog lives in the code.** It is exported to CSV on request, and
+every rule fired during a run is checked back against the catalog — documentation
+that drifts from behaviour is caught by the script itself, not by a reader.
+
 **PowerShell has no YARA engine.** VirusTotal's official binary is used — a
 deliberate, optional exception to the zero-dependency rule.
 
@@ -105,6 +169,8 @@ deliberate, optional exception to the zero-dependency rule.
 - **ShimCache is not execution evidence** — it shows a file was *seen* by the
   system. This is a common misreading.
 - Long commands truncated in the report are marked `...[+N chars]`.
+- PowerShell 4.0 runs in a reduced fallback mode for Server 2012 R2; some modules
+  collect less. The report says so when this happens.
 
 ## License
 
