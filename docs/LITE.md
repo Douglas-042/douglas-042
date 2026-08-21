@@ -10,7 +10,7 @@ Set-ExecutionPolicy -Scope Process Bypass -Force
 .\Douglas-042-Lite.ps1
 ```
 
-Run as **Administrator**. Output lands in the current directory:
+Run as **Administrator**. Output lands next to the script:
 
 ```
 REPORT_<hostname>_<timestamp>.txt
@@ -18,6 +18,8 @@ REPORT_<hostname>_<timestamp>.txt
 
 That is the entire interface. There are no switches to learn and nothing to
 configure.
+
+<img src="images/douglas-lite.png" width="900">
 
 ## What it is for
 
@@ -32,17 +34,17 @@ against rules with an evidence trail behind it, run
 | | Lite | Douglas-042 |
 |---|---|---|
 | Output | one `.txt` | folder: HTML report + CSV/JSON evidence |
-| Detection rules | none | 151, plus optional Sigma and YARA |
+| Detection rules | none | 153, plus optional Sigma and YARA |
 | Risk score | none | 0–100, normalised |
 | Forensic parsers | none | Prefetch, ShimCache, Amcache |
 | MITRE ATT&CK mapping | none | yes |
 | Remote collection | none | WinRM fan-out |
 | Parameters | none | 20+ |
-| Runtime | under a minute | 1–15 minutes |
+| Runtime | seconds | 1–15 minutes |
 
 ## What it collects
 
-83 collection blocks across 19 sections:
+83 collection blocks across 17 sections:
 
 | Section | Contents |
 |---|---|
@@ -89,8 +91,8 @@ point — Douglas-042 exists for that.
   than collecting a partial picture.
 - **Live-system impact:** running this touches file access times and Prefetch.
   If forensic soundness matters, image the disk first.
-- The report is typically a few hundred KB. `Ctrl+F` is your friend — start with
-  the PROCESSES, PERSISTENCE and NETWORK sections.
+- The report typically runs a few hundred KB. `Ctrl+F` is your friend — start
+  with the PROCESSES, PERSISTENCE and NETWORK sections.
 - Prefetch entries are listed, not parsed. Run counts and execution timestamps
   require Douglas-042.
 
