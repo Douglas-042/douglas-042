@@ -97,9 +97,6 @@ interactively with no parameters, so automation is unaffected.
 .\Douglas-042.ps1 -ExportRuleCatalog
 ```
 
-Report language is English by default; `-Language TR` renders the report in
-Turkish. Collection logic is identical either way.
-
 ## Output
 
 ```
