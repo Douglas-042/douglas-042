@@ -11,8 +11,10 @@ Set-ExecutionPolicy -Scope Process Bypass -Force
 
 That's it — a menu opens. Run as **Administrator**.
 
-Example report: [docs/REPORT-example.html](docs/REPORT-example.html)
-<img src="docs/images/mitre.png" width="900">
+<img src="docs/images/douglas-cli.png" width="900">
+
+Parameters work too (`-Help` for the full list). The menu only opens when run
+interactively with no parameters, so automation is unaffected.
 
 ---
 
@@ -20,17 +22,20 @@ Example report: [docs/REPORT-example.html](docs/REPORT-example.html)
 
 | Script | Question it answers | Time |
 |---|---|---|
-| [`Douglas-042.ps1`](Douglas-042.ps1) | *Is this machine compromised?* — 151 detection rules, risk score, HTML report | 1–15 min |
+| [`Douglas-042.ps1`](Douglas-042.ps1) | *Is this machine compromised?* — 153 detection rules, risk score, HTML report | 1–15 min |
 | [`Douglas-042-Lite.ps1`](Douglas-042-Lite.ps1) | *What is on this machine?* — single text snapshot, no analysis | under 1 min |
 
 Start with Lite when you need eyes on a host immediately. Move to Douglas-042
-when you need an answer you can put in a report. Lite documentation:
-[docs/LITE.md](docs/LITE.md).
+when you need an answer you can put in a report.
+
+<img src="docs/images/douglas-lite.png" width="900">
+
+Lite documentation: [docs/LITE.md](docs/LITE.md).
 
 ## What it does
 
 Collects volatile and forensic artifacts from a live Windows host, evaluates them
-against 151 built-in detection rules, and produces a single-file offline HTML report.
+against 153 built-in detection rules, and produces a single-file offline HTML report.
 
 - **Collection** — process tree, network connections joined to owning process,
   services, scheduled tasks, autoruns (all ASEP locations), WMI persistence,
@@ -45,25 +50,12 @@ Domain role is detected automatically (Client / Member Server / Domain
 Controller) and the relevant modules are enabled — Kerberos event analysis only
 runs on a DC, for example.
 
-## Menu
+Example report: [docs/REPORT-example.html](docs/REPORT-example.html)
 
-```
-   Sigma: ready   YARA: ready   MITRE: ready
+Every finding carries its ATT&CK technique, and the report closes with a
+coverage map of what was actually observed on the host:
 
-  -- COLLECTION MODES --
-   [1] Standard collection   Phase 0-3, last 14 days
-   [2] Quick triage          skips Phase 3 (~1-2 min)
-   [3] Wide scope + raw      30 days + VSS artifacts
-   [4] Sigma-assisted        Sigma rule matching
-   [5] Remote sweep          WinRM fan-out
-
-  -- TOOLS --
-   [6] Advanced / custom   [7] Usage guide   [8] Rule catalog
-   [9] Update center
-```
-
-Parameters work too (`-Help` for the full list). The menu only opens when run
-interactively with no parameters, so automation is unaffected.
+<img src="docs/images/mitre.png" width="900">
 
 ## Usage
 
@@ -125,7 +117,8 @@ versions into a `data\` folder next to the script:
 
 Files are found in `data\`, next to the script, or in the working directory —
 no paths to configure. **Nothing needs downloading to work offline**; all
-collection and the 151 built-in rules run regardless.
+collection and the 153 built-in rules run regardless. The banner tells you what
+is loaded before you pick a mode.
 
 `Build-SigmaPack.ps1` compiles Sigma YAML into the `sigma-pack.json` the collector
 reads. Compilation happens once, ahead of time, so the collector itself never
