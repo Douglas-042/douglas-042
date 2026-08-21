@@ -3,34 +3,33 @@
     Douglas-042 v2 - Incident Response & Threat Hunting Collector
 
 .DESCRIPTION
-    Tek script, tek calistirma, otomatik toplama. Domain ortaminda
-    Client / Member Server / Domain Controller uzerinde rol tespiti yapip
-    ilgili modulleri calistirir.
-
-    Cikti: klasor + artefakt basina CSV/JSON + FINDINGS.csv + REPORT.html
+    Single script, single run, automatic collection. Detects the role
+    (Client / Member Server / Domain Controller) in a domain environment
+    and runs the relevant modules.
+    Output: folder + CSV/JSON per artifact + FINDINGS.csv + REPORT.html
 
 .PARAMETER Days
-    Event log ve dosya sistemi icin geriye donuk gun sayisi. Varsayilan 14.
+    Number of days to look back for event logs and file system. Default 14.
 
 .PARAMETER OutputPath
-    Cikti kok dizini. Varsayilan: script dizini altinda .\Output
+    Output root directory. Default: .\Output under the script directory.
 
 .PARAMETER Quick
-    Hizli triage modu. Faz 3 (dosya tarama/hash) atlanir. ~1-2 dakika.
+    Fast triage mode. Phase 3 (file scan/hashing) is skipped. ~1-2 minutes.
 
 .PARAMETER CollectRaw
-    Ham adli artefakt kopyalama (MFT, registry hive, evtx, SRUM, Amcache).
-    VSS snapshot uzerinden calisir. Birkac GB olabilir.
+    Copies raw forensic artifacts (MFT, registry hives, evtx, SRUM, Amcache).
+    Runs via VSS snapshot. Can be several GB in size.
 
 .PARAMETER NoResolve
-    Reverse DNS ve dis ag sorgularini kapatir. (OPSEC / izole ortam)
+    Disables reverse DNS and external network queries. (OPSEC / isolated environment)
 
 .PARAMETER MaxEventsPerChannel
-    Kanal basina maksimum event sayisi. Varsayilan 100000.
+    Maximum number of events per channel. Default 100000.
 
 .PARAMETER IocFile
-    Satir basina bir IOC iceren dosya (hash / IP / domain / dosya adi).
-    Toplanan tum veriyle eslestirilir.
+    File containing one IOC per line (hash / IP / domain / file name).
+    Matched against all collected data.
 
 .EXAMPLE
     .\Douglas-042.ps1
