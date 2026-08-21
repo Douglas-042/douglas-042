@@ -96,4 +96,4 @@ point — Douglas-042 exists for that.
 
 ## License
 
-MIT.
+Apache License 2.0 — see [../LICENSE](../LICENSE).
