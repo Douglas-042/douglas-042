@@ -171,12 +171,4 @@ deliberate, optional exception to the zero-dependency rule.
 
 ## License
 
-## License
-
 Apache License 2.0 — see [LICENSE](LICENSE).
-
-Third-party rule sets are not distributed with this repository. Anything
-downloaded through the update center stays under its own license: Sigma rules
-under the Detection Rule License 1.1, YARA-Forge under the licenses of its
-upstream sources, MITRE ATT&CK under MITRE's terms, and yara64.exe under the
-YARA project's BSD 3-Clause license.
