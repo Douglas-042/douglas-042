@@ -164,4 +164,4 @@ deliberate, optional exception to the zero-dependency rule.
 
 ## License
 
-Apache License 2.0 — see [LICENSE](LICENSE).
+Licensed under the MIT License. See [LICENSE](LICENSE).
